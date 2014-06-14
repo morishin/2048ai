@@ -7,13 +7,11 @@ import enum
 
 API_URL = "http://localhost:8080/"
 SESSION_ID = ""
+SLEEP_TIME = 0.1
 
 
 class Direction(enum.Enum):
-    up = 0
-    right = 1
-    down = 2
-    left = 3
+    up, right, down, left = range(4)
 
 
 def start_request():
@@ -68,7 +66,23 @@ def merge_list(ls):
 
 
 def opt_direction(grid):
-    pass
+    # ランダムに方向を決定
+    d = [Direction.up, Direction.right, Direction.down, Direction.left]
+    return d[random.randint(0, 3)]
+
+
+def grid_to_str(grid):
+    result = "+-----+-----+-----+-----+\n"
+    for row in xrange(0, 4):
+        result += "|"
+        for col in xrange(0, 4):
+            result += "%5d" % (grid[row][col])
+            result += "|"
+        if row == 3:
+            result += "\n+-----+-----+-----+-----+\n"
+        else:
+            result += "\n|-----+-----+-----+-----+\n"
+    return result
 
 
 if __name__ == "__main__":
@@ -77,7 +91,10 @@ if __name__ == "__main__":
     while not result["over"]:
         direction = opt_direction(result["grid"])
         result = move_request(direction).body
-        sleep(0.1)
+        print "input: " + ["↑", "→", "↓", "←"][direction.value]
+        print grid_to_str(result["grid"])
+        if SLEEP_TIME != 0:
+            sleep(SLEEP_TIME)
     if result["won"]:
         print "Won."
     else:
